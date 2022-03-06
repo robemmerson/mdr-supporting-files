@@ -1,0 +1,36 @@
+name: Update Dependencies
+
+on: workflow_dispatch
+
+env:
+  # Use docker.io for Docker Hub if empty
+  NXLOG_FILE_DOWNLOAD: https://nxlog.co/system/files/products/files/348/nxlog-ce-3.0.2272.msi
+  NXLOG_SAVE_LOCATION_TEMP: nxlog-tmp.msi
+  SYSMON_FILE_DOWNLOAD: https://download.sysinternals.com/files/Sysmon.zip
+  SYSMON_SAVE_LOCATION_TEMP: sysmon-tmp.zip
+
+jobs:
+  download:
+    name: Download
+    runs-on: 'ubuntu-latest' # 'windows-latest' # [self-hosted, linux]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Check for NxLog Update
+        run: |
+          wget ${{ env.NXLOG_FILE_DOWNLOAD }} -O ${{ env.NXLOG_SAVE_LOCATION_TEMP }}
+
+      - name: Check for Sysmon Update
+        run: |
+          wget ${{ env.SYSMON_FILE_DOWNLOAD }} -O ${{ env.SYSMON_SAVE_LOCATION_TEMP }}
+
+      - name: Setup Git
+        run: |
+          git config --global user.email "rob.emmerson@gmail.com"
+          git config --global user.name "Rob Emmerson"
+      
+      - name: Commit and Push
+        run: |
+          git add -A && git commit -m 'Automatic Update' && git push
