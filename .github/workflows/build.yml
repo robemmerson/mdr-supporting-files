@@ -21,13 +21,14 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Check for NxLog Update
+        id: nxlog
         run: |
           wget ${{ env.NXLOG_FILE_DOWNLOAD }} -O ${{ env.NXLOG_SAVE_LOCATION_TEMP }}
           NxLogExisting=$(md5sum ${{ env.NXLOG_SAVE_LOCATION }} | cut -f1 -d' ')
           NxLogNew=$(md5sum ${{ env.NXLOG_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "NxLogExisting is set to: $NxLogExisting"
           echo "NxLogNew is set to: $NxLogNew"
-          if [[ ! $NxLogExisting = $NxLogNew ]]; then echo "Updating NxLog"; mv ${{ env.NXLOG_SAVE_LOCATION_TEMP }} ${{ env.NXLOG_SAVE_LOCATION }}; GitBranchHash=${NxLogNew:0:8}; else echo "No update, removing temporary file"; rm -f ${{ env.NXLOG_SAVE_LOCATION_TEMP }}; fi
+          if [[ ! $NxLogExisting = $NxLogNew ]]; then echo "Updating NxLog"; mv ${{ env.NXLOG_SAVE_LOCATION_TEMP }} ${{ env.NXLOG_SAVE_LOCATION }}; echo "::set-output GitBranchHash=test::${NxLogNew:0:8}"; else echo "No update, removing temporary file"; rm -f ${{ env.NXLOG_SAVE_LOCATION_TEMP }}; fi
 
       - name: Check for Sysmon Update
         run: |
@@ -40,5 +41,5 @@ jobs:
       
       - name: Commit and Push
         run: |
-          echo "GitBranchHash is set to: $GitBranchHash"
-          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-$GitBranchHash && git add -A && git commit -m 'Automatic Update' && git push -u origin update-$GitBranchHash else echo "No update required"; fi
+          echo "GitBranchHash is set to: ${{needs.download.nxlog.GitBranchHash}}"
+          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{needs.download.nxlog.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{needs.download.nxlog.GitBranchHash}} else echo "No update required"; fi
