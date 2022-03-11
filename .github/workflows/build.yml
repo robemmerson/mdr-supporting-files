@@ -28,7 +28,8 @@ jobs:
           NxLogNew=$(md5sum ${{ env.NXLOG_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "NxLogExisting is set to: $NxLogExisting"
           echo "NxLogNew is set to: $NxLogNew"
-          echo "::set-output name=rob::emmerson";
+          ::set-output name=rob::emmerson
+          
           if [[ ! $NxLogExisting = $NxLogNew ]]; then echo "Updating NxLog"; mv ${{ env.NXLOG_SAVE_LOCATION_TEMP }} ${{ env.NXLOG_SAVE_LOCATION }}; echo "::set-output name=GitBranchHash::${NxLogNew:0:8}"; else echo "No update, removing temporary file"; rm -f ${{ env.NXLOG_SAVE_LOCATION_TEMP }}; fi
 
       - name: Check for Sysmon Update
