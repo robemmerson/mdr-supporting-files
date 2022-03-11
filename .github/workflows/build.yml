@@ -10,6 +10,7 @@ env:
   SYSMON_FILE_DOWNLOAD: https://download.sysinternals.com/files/Sysmon.zip
   SYSMON_SAVE_LOCATION: sysmon.zip
   SYSMON_SAVE_LOCATION_TEMP: sysmon-tmp.zip
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
   download:
@@ -28,9 +29,7 @@ jobs:
           NxLogNew=$(md5sum ${{ env.NXLOG_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "NxLogExisting is set to: $NxLogExisting"
           echo "NxLogNew is set to: $NxLogNew"
-          echo "::set-output name=rob::emmerson"
-          
-          if [[ ! $NxLogExisting = $NxLogNew ]]; then echo "Updating NxLog"; mv ${{ env.NXLOG_SAVE_LOCATION_TEMP }} ${{ env.NXLOG_SAVE_LOCATION }}; echo "::set-output name=GitBranchHash::${NxLogNew:0:8}"; else echo "No update, removing temporary file"; rm -f ${{ env.NXLOG_SAVE_LOCATION_TEMP }}; fi
+          if [[ ! $NxLogExisting = $NxLogNew ]]; then echo "Updating NxLog"; mv ${{ env.NXLOG_SAVE_LOCATION_TEMP }} ${{ env.NXLOG_SAVE_LOCATION }}; export GitBranchHash=${NxLogNew:0:8}; echo "::set-env name=GitBranchHash::$GitBranchHash"; else echo "No update, removing temporary file"; rm -f ${{ env.NXLOG_SAVE_LOCATION_TEMP }}; fi
 
       - name: Check for Sysmon Update
         run: |
@@ -43,6 +42,5 @@ jobs:
       
       - name: Commit and Push
         run: |
-          echo "rob is set to: ${{steps.nxlog.output.rob}}"
-          echo "GitBranchHash is set to: ${{steps.nxlog.output.GitBranchHash}}"
-          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{steps.nxlog.output.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{steps.nxlog.output.GitBranchHash}}; else echo "No update required"; fi
+          echo "GitBranchHash is set to: $GitBranchHash"
+          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-$GitBranchHash && git add -A && git commit -m 'Automatic Update' && git push -u origin update-$GitBranchHash; else echo "No update required"; fi
