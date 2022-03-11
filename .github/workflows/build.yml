@@ -42,4 +42,4 @@ jobs:
       - name: Commit and Push
         run: |
           echo "GitBranchHash is set to: ${{steps.nxlog.output.GitBranchHash}}"
-          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{steps.nxlog.output.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{steps.nxlog.output.GitBranchHash}} else echo "No update required"; fi
+          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{steps.nxlog.output.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{steps.nxlog.output.GitBranchHash}}; else echo "No update required"; fi
