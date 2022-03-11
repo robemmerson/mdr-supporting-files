@@ -16,9 +16,6 @@ jobs:
     name: Update
     runs-on: 'ubuntu-latest' # 'windows-latest' # [self-hosted, linux]
 
-    outputs:
-      GitBranchHash: ${{ steps.nxlog.outputs.GitBranchHash }}
-      
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,5 +41,5 @@ jobs:
       
       - name: Commit and Push
         run: |
-          echo "GitBranchHash is set to: ${{needs.download.outputs.GitBranchHash}}"
-          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{needs.download.outputs.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{needs.download.outputs.GitBranchHash}} else echo "No update required"; fi
+          echo "GitBranchHash is set to: ${{steps.nxlog.output.GitBranchHash}}"
+          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-${{steps.nxlog.output.GitBranchHash}} && git add -A && git commit -m 'Automatic Update' && git push -u origin update-${{steps.nxlog.output.GitBranchHash}} else echo "No update required"; fi
