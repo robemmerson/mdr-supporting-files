@@ -36,6 +36,11 @@ jobs:
       - name: Check for Sysmon Update
         run: |
           wget ${{ env.SYSMON_FILE_DOWNLOAD }} -O ${{ env.SYSMON_SAVE_LOCATION_TEMP }}
+          SysmonExisting=$(md5sum ${{ env.SYSMON_SAVE_LOCATION }} | cut -f1 -d' ')
+          SysmonNew=$(md5sum ${{ env.SYSMON_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
+          echo "SysmonExisting is set to: $SysmonExisting"
+          echo "SysmonNew is set to: $SysmonNew"
+          if [[ ! $SysmonExisting = $SysmonNew ]]; then echo "Updating Sysmon"; mv ${{ env.SYSMON_SAVE_LOCATION_TEMP }} ${{ env.SYSMON_SAVE_LOCATION }}; export GitBranchHash=${SysmonNew:0:8}; echo "::set-env name=GitBranchHash::$GitBranchHash"; else echo "No update, removing temporary file"; rm -f ${{ env.SYSMON_SAVE_LOCATION_TEMP }}; fi
 
       - name: Setup Git
         run: |
