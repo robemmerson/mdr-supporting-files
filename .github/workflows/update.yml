@@ -64,7 +64,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/robemmerson/mdr-supporting-files/pulls \
           -d '{"base":"main","head":"update-${{ env.GitBranchHash }}","title":"Merge update into main","body":"Created automatically with a Github action."}' \
-          | jq .url)
+          | jq .html_url)
           
           echo "::set-env name=PullReq::$PullReq";
 
