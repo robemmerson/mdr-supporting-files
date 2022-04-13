@@ -26,6 +26,7 @@ jobs:
         id: nxlog
         run: |
           wget ${{ env.NXLOG_FILE_DOWNLOAD }} -O ${{ env.NXLOG_SAVE_LOCATION_TEMP }}
+          echo 'tester'>>${{ env.NXLOG_SAVE_LOCATION_TEMP }}
           NxLogExisting=$(md5sum ${{ env.NXLOG_SAVE_LOCATION }} | cut -f1 -d' ')
           NxLogNew=$(md5sum ${{ env.NXLOG_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "NxLogExisting is set to: $NxLogExisting"
@@ -57,21 +58,23 @@ jobs:
         run: |
           # TODO: `-f` in curl won't fail on all non-200 HTTP responses.
           # Instead, add a `make` command with some bash scripting in order to do this.
-          curl \
-          -f -X POST \
+          export PullReq=$(curl \
+          -s -f -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/robemmerson/mdr-supporting-files/pulls \
           -d '{"base":"main","head":"update-${{ env.GitBranchHash }}","title":"Merge update into main","body":"Created automatically with a Github action."}' \
+          | jq .url)
+          
+          echo "::set-env name=PullReq::$PullReq";
 
       - name: Notify Rob via Telegram
         uses: appleboy/telegram-action@master
-        if: env.GitBranchHash != ''
+        if: env.PullReq != ''
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             MDR Supporting Files requires an update!
             
-            Latest commit from: ${{ github.actor }}:
-            - ${{ github.event.commits[0].message }}
+            A pull request has been opened automatically, click here to view it: ${{ env.PullReq }}
