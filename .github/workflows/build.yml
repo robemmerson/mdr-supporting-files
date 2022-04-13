@@ -58,5 +58,5 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/robemmerson/mdr-supporting-files/pulls \
-          -d '{"base":"main","head":"update-$GitBranchHash","title":"Merge update into main","body":"Created automatically with a Github action."}' \
+          -d '{"base":"main","head":"update-${{ env.GitBranchHash }}","title":"Merge update into main","body":"Created automatically with a Github action."}' \
 
