@@ -66,6 +66,7 @@ jobs:
 
       - name: Notify Rob via Telegram
         uses: appleboy/telegram-action@master
+        if: env.GitBranchHash != ''
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
