@@ -42,13 +42,13 @@ jobs:
           git config --global user.name "Rob Emmerson"
       
       - name: Commit and Push
-        if: env.GitBranchHash != ""
+        if: env.GitBranchHash != ''
         run: |
           echo "GitBranchHash is set to: $GitBranchHash"
           if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-$GitBranchHash && git add -A && git commit -m 'Automatic Update' && git push -u origin update-$GitBranchHash; else echo "No update required"; fi
           
       - name: Create Pull Request
-        if: env.GitBranchHash != ""
+        if: env.GitBranchHash != ''
         run: |
           # TODO: `-f` in curl won't fail on all non-200 HTTP responses.
           # Instead, add a `make` command with some bash scripting in order to do this.
