@@ -35,7 +35,7 @@ jobs:
             echo "NxLog file found, proceeding to check for update..."; \
           else \
             echo "NxLog file NOT found, reporting error..." \
-            echo NXLOG_ERROR="File cannot be found: $nxlogfile";
+            echo NXLOG_ERROR="File cannot be found: $nxlogfile" >>$GITHUB_ENV;
           fi
       
       - name: Check for NxLog Update
