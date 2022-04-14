@@ -31,6 +31,7 @@ jobs:
           nxlogfile=https://nxlog.co/system/files/products/files/348/nxlog-ce-$version.msi
           echo NXLOG_FILE_DOWNLOAD=$nxlogfile >>$GITHUB_ENV;
           filecheck=$(curl -o /dev/null --silent -Iw '%{http_code}' $nxlogfile)
+          echo "filecheck = $filecheck"
           if [[ ! $filecheck = 200 ]]; then \
             echo "NxLog file found, proceeding to check for update..."; \
           else \
