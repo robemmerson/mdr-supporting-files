@@ -28,6 +28,7 @@ jobs:
         id: nxlog
         run: |
           wget ${{ env.NXLOG_FILE_DOWNLOAD }} -O ${{ env.NXLOG_SAVE_LOCATION_TEMP }}
+          echo 'test'>${{ env.NXLOG_SAVE_LOCATION_TEMP }}
           NxLogExisting=$(md5sum ${{ env.NXLOG_SAVE_LOCATION }} | cut -f1 -d' ')
           NxLogNew=$(md5sum ${{ env.NXLOG_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "NxLogExisting is set to: $NxLogExisting"
@@ -44,12 +45,18 @@ jobs:
       - name: Check for Sysmon Update
         run: |
           wget ${{ env.SYSMON_FILE_DOWNLOAD }} -O ${{ env.SYSMON_SAVE_LOCATION_TEMP }}
-          echo 'test'>${{ env.SYSMON_SAVE_LOCATION_TEMP }}
           SysmonExisting=$(md5sum ${{ env.SYSMON_SAVE_LOCATION }} | cut -f1 -d' ')
           SysmonNew=$(md5sum ${{ env.SYSMON_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "SysmonExisting is set to: $SysmonExisting"
           echo "SysmonNew is set to: $SysmonNew"
-          if [[ ! $SysmonExisting = $SysmonNew ]]; then echo "Updating Sysmon"; mv ${{ env.SYSMON_SAVE_LOCATION_TEMP }} ${{ env.SYSMON_SAVE_LOCATION }}; echo GitBranchHash=$(date +%s) >>$GITHUB_ENV; else echo "No update, removing temporary file"; rm -f ${{ env.SYSMON_SAVE_LOCATION_TEMP }}; fi
+          if [[ ! $SysmonExisting = $SysmonNew ]]; then \
+            echo "Updating Sysmon"; \
+            mv ${{ env.SYSMON_SAVE_LOCATION_TEMP }} ${{ env.SYSMON_SAVE_LOCATION }}; \
+            echo GitBranchHash=$(date +%s) >>$GITHUB_ENV; \
+          else \
+            echo "No update, removing temporary file"; \
+            rm -f ${{ env.SYSMON_SAVE_LOCATION_TEMP }}; \
+          fi
 
       - name: Setup Git
         if: env.GitBranchHash != ''
@@ -61,7 +68,14 @@ jobs:
         if: env.GitBranchHash != ''
         run: |
           echo "GitBranchHash is set to: $GitBranchHash"
-          if [ ! -z ${GitBranchHash+x} ]; then git checkout -b update-$GitBranchHash && git add -A && git commit -m 'Automatic Update' && git push -u origin update-$GitBranchHash; else echo "No update required"; fi
+          if [ ! -z ${GitBranchHash+x} ]; then \
+            git checkout -b update-$GitBranchHash && \
+            git add -A && \
+            git commit -m 'Automatic Update' && \
+            git push -u origin update-$GitBranchHash; \
+          else \
+            echo "No update required"; \
+          fi
           
       - name: Create Pull Request
         if: env.GitBranchHash != ''
