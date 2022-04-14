@@ -28,13 +28,14 @@ jobs:
         id: nxlog-version
         run: |
           version=$(curl -s https://gitlab.com/nxlog-public/nxlog-ce/-/raw/master/ChangeLog.txt | head -n1 | cut -d' ' -f3)
-          echo NXLOG_FILE_DOWNLOAD=https://nxlog.co/system/files/products/files/348/nxlog-ce-$version.msi >>$GITHUB_ENV;
-          filecheck=$(curl -o /dev/null --silent -Iw '%{http_code}' $NXLOG_FILE_DOWNLOAD)
+          nxlogfile=https://nxlog.co/system/files/products/files/348/nxlog-ce-$version.msi
+          echo NXLOG_FILE_DOWNLOAD=$nxlogfile >>$GITHUB_ENV;
+          filecheck=$(curl -o /dev/null --silent -Iw '%{http_code}' $nxlogfile)
           if [[ ! $filecheck = 200 ]]; then \
             echo "NxLog file found, proceeding to check for update..."; \
           else \
             echo "NxLog file NOT found, reporting error..." \
-            echo NXLOG_ERROR="File cannot be found: $NXLOG_FILE_DOWNLOAD";
+            echo NXLOG_ERROR="File cannot be found: $nxlogfile";
           fi
       
       - name: Check for NxLog Update
