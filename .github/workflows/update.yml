@@ -40,9 +40,10 @@ jobs:
           SysmonNew=$(md5sum ${{ env.SYSMON_SAVE_LOCATION_TEMP }} | cut -f1 -d' ')
           echo "SysmonExisting is set to: $SysmonExisting"
           echo "SysmonNew is set to: $SysmonNew"
-          if [[ ! $SysmonExisting = $SysmonNew ]]; then echo "Updating Sysmon"; mv ${{ env.SYSMON_SAVE_LOCATION_TEMP }} ${{ env.SYSMON_SAVE_LOCATION }}; export GitBranchHash=${SysmonNew:0:8}; echo "::set-env name=GitBranchHash::$GitBranchHash"; else echo "No update, removing temporary file"; rm -f ${{ env.SYSMON_SAVE_LOCATION_TEMP }}; fi
+          if [[ ! $SysmonExisting = $SysmonNew ]]; then echo "Updating Sysmon"; mv ${{ env.SYSMON_SAVE_LOCATION_TEMP }} ${{ env.SYSMON_SAVE_LOCATION }}; echo GitBranchHash=$(date +%s) >>$GITHUB_ENV; else echo "No update, removing temporary file"; rm -f ${{ env.SYSMON_SAVE_LOCATION_TEMP }}; fi
 
       - name: Setup Git
+        if: env.GitBranchHash != ''
         run: |
           git config --global user.email "rob.emmerson@gmail.com"
           git config --global user.name "Rob Emmerson"
@@ -58,18 +59,16 @@ jobs:
         run: |
           # TODO: `-f` in curl won't fail on all non-200 HTTP responses.
           # Instead, add a `make` command with some bash scripting in order to do this.
-          export PullReq=$(curl \
+          echo PullReq=$(curl \
           -s -f -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           https://api.github.com/repos/robemmerson/mdr-supporting-files/pulls \
           -d '{"base":"main","head":"update-${{ env.GitBranchHash }}","title":"Merge update into main","body":"Created automatically with a Github action."}' \
-          | jq .html_url)
-          
-          echo "::set-env name=PullReq::$PullReq";
+          | jq .html_url) >>$GITHUB_ENV;
 
       - name: Notify Rob via Telegram
-        uses: appleboy/telegram-action@master
+        uses: appleboy/telegram-action@2e9996f96e095a537aa4442da4af41ca7b594fba
         if: env.PullReq != ''
         with:
           to: ${{ secrets.TELEGRAM_TO }}
