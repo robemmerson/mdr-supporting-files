@@ -13,7 +13,7 @@ env:
   SYSMON_FILE_DOWNLOAD: https://download.sysinternals.com/files/Sysmon.zip
   SYSMON_SAVE_LOCATION: sysmon.zip
   SYSMON_SAVE_LOCATION_TEMP: sysmon-tmp.zip
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+  #ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
   update:
