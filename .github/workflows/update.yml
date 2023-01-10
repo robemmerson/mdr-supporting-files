@@ -7,7 +7,7 @@ on:
 
 env:
   # Use docker.io for Docker Hub if empty
-  NXLOG_FILE_DOWNLOAD: https://nxlog.co/system/files/products/files/348/nxlog-ce-3.0.2284.msi
+  NXLOG_FILE_DOWNLOAD: https://dl.nxlog.co/dl/multiple/63bd48c2c637e?file_id=nxlog-ce/3.1.2319/nxlog-ce-3.1.2319.msi
   NXLOG_SAVE_LOCATION: nxlog.msi
   NXLOG_SAVE_LOCATION_TEMP: nxlog-tmp.msi
   SYSMON_FILE_DOWNLOAD: https://download.sysinternals.com/files/Sysmon.zip
