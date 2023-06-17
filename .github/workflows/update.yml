@@ -2,8 +2,8 @@ name: Update Dependencies
 
 on:
   workflow_dispatch:
-  schedule:
-  - cron: 30 10 * * *
+  # schedule:
+  # - cron: 30 10 * * *
 
 env:
   # Use docker.io for Docker Hub if empty
